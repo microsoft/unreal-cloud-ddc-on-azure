@@ -21,4 +21,12 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}        
     - name: Run Deployment Script
-      run: ${PWD}/scripts/deploy "eastus" "studio-horde-storage" "confs/studio.parameters.json"
+      run: |
+        for f in configs/*.parameters.json; do
+          echo $f
+          
+          $LOCATION=$(jq '.parameters.location.value' configs/studio.parameters.json)
+          ${PWD}/scripts/deploy "eastus" "studio-horde-storage" "$f"
+          # remember to quote it or spaces may misbehave
+        done
+        
