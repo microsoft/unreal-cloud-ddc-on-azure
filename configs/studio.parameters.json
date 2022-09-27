@@ -18,12 +18,6 @@
         "hostname":{
             "value": "horde-storage.studio.net"
         },
-        "certificateIssuer": {
-            "value": "Studio-Issuer"
-        },
-        "issuerProvider": {
-            "value": "OneCertV2-PublicCA"
-        },
         "trafficManagerName": {
             "value": "studio-horde-storage"
         },
