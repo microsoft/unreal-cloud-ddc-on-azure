@@ -22,5 +22,5 @@ az deployment group create \
     --subscription "$SUBSCRIPTION_ID" \
     --resource-group "$RESOURCE_GROUP" \
     --template-file main.bicep \
-    --parameters $PARAMETERS \
+    --parameters "$PARAMETERS" \
     || exit 1
