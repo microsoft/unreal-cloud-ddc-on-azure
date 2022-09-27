@@ -4,6 +4,9 @@ name: Deployment
 on:
   workflow_dispatch:
   release:
+  push:
+    branches:
+      main
 
 jobs:
   DeployTemplate:
@@ -11,13 +14,32 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: Get specific changed files
+      id: changed-files-specific
+      uses: tj-actions/changed-files@v31
+      with:
+        files: |
+          configs/*.parameters.json
     - name: Azure Login
       uses: azure/login@v1
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}        
-    - name: Run Deployment Script
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Run Changed Deployment Script
+      if: github.event_type != 'push'
       run: |
         for file in configs/*.parameters.json; do        
+          LOCATION=$(jq '.parameters.location.value' "$file")
+          RESOURCE_GROUP=$(jq '.metadata.value' "$file")
+          ${PWD}/scripts/deploy $LOCATION $RESOURCE_GROUP "$file"
+        done
+
+    - name: Run Deployment Script
+      if: github.event_type == 'push'
+      run: |
+        for file in ${{ steps.changed-files.outputs.modified_files }}; do        
           LOCATION=$(jq '.parameters.location.value' "$file")
           RESOURCE_GROUP=$(jq '.metadata.value' "$file")
           ${PWD}/scripts/deploy $LOCATION $RESOURCE_GROUP "$file"
