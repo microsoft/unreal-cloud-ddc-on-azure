@@ -14,12 +14,6 @@
         "hostname":{
             "value": "horde-storage.studio2.net"
         },
-        "certificateIssuer": {
-            "value": "Studio2-Issuer"
-        },
-        "issuerProvider": {
-            "value": "OneCertV2-PublicCA"
-        },
         "trafficManagerName": {
             "value": "studio2-horde-storage"
         },
