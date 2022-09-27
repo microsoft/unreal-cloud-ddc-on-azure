@@ -20,3 +20,5 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}        
+    - name: Run Deployment Script
+      run: ${PWD}/scripts/deploy "eastus" "studio-horde-storage" "confs/studio.parameters.json"
