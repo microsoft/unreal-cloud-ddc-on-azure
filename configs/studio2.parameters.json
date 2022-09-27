@@ -1,0 +1,38 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "agentPoolCount": {
+            "value": 3
+        },
+        "servicePrincipalObjectID": {
+            "value": "8b351e27-d212-49bb-b4dd-ebf5fc14e581"
+        },
+        "servicePrincipalClientID": {
+            "value": "63af6de1-b382-4cea-b535-3520e1686737"
+        },
+        "hostname":{
+            "value": "horde-storage.studio2.net"
+        },
+        "certificateIssuer": {
+            "value": "Studio2-Issuer"
+        },
+        "issuerProvider": {
+            "value": "OneCertV2-PublicCA"
+        },
+        "trafficManagerName": {
+            "value": "studio2-horde-storage"
+        },
+        "trafficManagerDnsName": {
+            "value": "studio2.horde-storage"
+        },
+        "secondaryLocations": {
+            "value": [
+                "eastus"
+            ]
+        },
+        "unityEULA": {
+            "value": false
+        }
+    }
+}
