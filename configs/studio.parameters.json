@@ -32,7 +32,8 @@
             ]
         },
         "unityEULA": {
-            "value": false // This must be set true
+            // This must be set true
+            "value": false
         }
     }
 }
