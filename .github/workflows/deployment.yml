@@ -1,0 +1,22 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License.
+name: Deployment
+
+concurrency: 
+  group: ${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+jobs:
+  DeployTemplate:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}        
