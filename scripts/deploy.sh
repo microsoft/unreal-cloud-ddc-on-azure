@@ -7,6 +7,7 @@
 SUBSCRIPTION_ID=$1
 LOCATION=$2
 RESOURCE_GROUP=$3
+PARAMETERS=$4
 
 echo '##[section]Horde Storage - Deploy Bicep Template'
 az bicep install --version v0.10.61
@@ -21,5 +22,5 @@ az deployment group create \
     --subscription "$SUBSCRIPTION_ID" \
     --resource-group "$RESOURCE_GROUP" \
     --template-file main.bicep \
-    --parameters confs/studio.parameters.json \
+    --parameters "$PARAMETERS" \
     || exit 1
