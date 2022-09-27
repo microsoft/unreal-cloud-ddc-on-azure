@@ -15,12 +15,6 @@ param agentPoolName string = 'k8agent'
 param vmSize string = 'Standard_L16s_v2'
 param hostname string = 'deploy1.horde-storage.gaming.azure.com'
 
-@description('Unknown, Self, or {IssuerName} for certificate signing')
-param certificateIssuer string = 'Self'
-
-@description('Certificate Issuer Provider')
-param issuerProvider string = ''
-
 @description('Running this template requires roleAssignment permission on the Resource Group, which require an Owner role. Set this to false to deploy some of the resources')
 param assignRole bool = true
 
@@ -73,6 +67,8 @@ param unityEULA bool = false
 
 param managedResourceGroupName string = 'mrg'
 
+var certificateIssuer = 'Subscription-Issuer'
+var issuerProvider = 'OneCertV2-PublicCA'
 var managedResourceGroupId = '${subscription().id}/resourceGroups/${resourceGroup().name}-${managedResourceGroupName}'
 
 resource hordeStorage 'Microsoft.Solutions/applications@2017-09-01' = {
