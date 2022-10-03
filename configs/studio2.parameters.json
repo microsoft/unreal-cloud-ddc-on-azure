@@ -6,30 +6,21 @@
         "location": {
             "value": "southcentralus"
         },    
-        "agentPoolCount": {
-            "value": 3
-        },
         "servicePrincipalObjectID": {
-            "value": "8b351e27-d212-49bb-b4dd-ebf5fc14e581"
+            "value": ""
         },
         "servicePrincipalClientID": {
-            "value": "63af6de1-b382-4cea-b535-3520e1686737"
+            "value": ""
         },
         "hostname":{
             "value": "horde-storage.studio2.net"
-        },
-        "trafficManagerName": {
-            "value": "studio2-horde-storage"
-        },
-        "trafficManagerDnsName": {
-            "value": "studio2.horde-storage"
         },
         "secondaryLocations": {
             "value": [
                 "westus"
             ]
         },
-        "unityEULA": {
+        "epicEULA": {
             "value": false
         }
     }
