@@ -1,5 +1,5 @@
 additional:
-  - "microsoft/internal-epic-cloud-ddc" # include
+  - "internal-epic-cloud-ddc" # include
 
 files:
   - ".gitignore"  # include
