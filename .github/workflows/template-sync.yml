@@ -11,6 +11,6 @@ jobs:
           token: ${{ secrets.PAT }}
 
       - name: Template Repository Sync
-        uses: ahmadnassri/action-template-repository-sync@v2.0.4
+        uses: EuphoricSystems/action-sync-template-repository@v1.9.1
         with:
           github-token: ${{ secrets.PAT }}
