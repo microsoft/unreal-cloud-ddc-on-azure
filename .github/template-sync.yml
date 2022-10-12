@@ -1,5 +1,5 @@
 dependents:
-  - "internal-epic-cloud-ddc" # include
+  - "microsoft/internal-epic-cloud-ddc" # include
 
 files:
   - ".gitignore"  # include
