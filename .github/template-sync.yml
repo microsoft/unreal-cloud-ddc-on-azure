@@ -1,4 +1,4 @@
-additional:
+dependents:
   - "internal-epic-cloud-ddc" # include
 
 files:
