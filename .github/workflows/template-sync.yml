@@ -7,10 +7,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:          
-          token: ${{ secrets.PAT }}
-      - name: actions-template-sync
-        uses: AndreasAugustin/actions-template-sync@v0.4.2-draft
+
+      - name: Template Repository Sync
+        uses: ahmadnassri/action-template-repository-sync@v2.0.4
         with:
-          github_token: ${{ secrets.PAT }}
-          source_repo_path: microsoft/python-package-template
+          github-token: ${{ secrets.GITHUB_TOKEN }}
