@@ -41,7 +41,5 @@ function setup_ddc(){
         --install
 }
 
-# setup_workload_id
-# setup_nginx
 setup_secret_store
 setup_ddc
