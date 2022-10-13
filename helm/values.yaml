@@ -1,194 +1,69 @@
-x-datadog:
-  podAnnotations:
-    tags: &datadog_pod_annotations_tags '{"owner": "devtools","application": "jupiter"}'
-  
-  podLabels: &datadog_pod_labels
-     tags.datadoghq.com/env: dev
-     tags.datadoghq.com/service: "{{ .Chart.Name }}"
-     tags.datadoghq.com/version: "{{ .Values.global.OverrideAppVersion }}"
+federated_id          : &FEDERATED_ID
+key_vault             : &KEY_VAULT
+AzureConnectionString : &AZURE
+ScyllaConnectionString: &SCYLLA
+ScyllaDatacenterName  : &ScyllaDatacenterName
+ScyllaKeyspaceSuffix  : &ScyllaKeyspaceSuffix
+OAuthClient           : &OAuthClient
+OAuthClientSecret     : &OAUTHSecret
+OAuthLoginUrl         : &OAuthLoginUrl
+OAuthScope            : &OAuthScope
+hostname              : &HOSTNAME
+jwtAudience           : &jwtAudience
+jwtAuthority          : &jwtAuthority
+tenantID              : &TENANT_ID
+subscriptionID        : &SUBSCRIPTION_ID
 
 x-jupiter-env:
-  # as yaml doesnt support merging sequences we just define a standard env for all services even though the extra urls are only needed for horde-storage
   env: &jupiter-env
-  - name: DD_AGENT_HOST
-    valueFrom:
-      fieldRef:
-        fieldPath: status.hostIP
-  - name: DD_ENV
-    value: dev
-  - name: DD_SERVICE
-    value: "{{ .Chart.Name }}"
-  - name: DD_VERSION
-    value: "{{ .Values.global.OverrideAppVersion }}"
-  - name: ASPNETCORE_URLS
-    value: "http://0.0.0.0:80;http://0.0.0.0:8080"
   - name: AZURE_CLIENT_ID
-    # tc-unreal-horde-app
-    value: 63af6de1-b382-4cea-b535-3520e1686737
+    value: *OAuthClient
   - name: AZURE_TENANT_ID
-    # microsoft.onmicrosoft.com
-    value: 72f988bf-86f1-41af-91ab-2d7cd011db47
+    value: *TENANT_ID
   - name: AZURE_FEDERATED_TOKEN_FILE
     value: /var/run/secrets/tokens/azure-identity-token
 
-x-namespace-policy: &namespace-policy
-  storagePool: "zen"
-  IsLegacyNamespace: false
-  UseBlobIndexForSlowExists: true
-  UseBlobIndexForExists: true
-
 horde-storage:
-
-  image:
-    repository: tchordestoragecontainerregistry.azurecr.io/tcunrealhorde/storageapp
-
-  service:
-    extraPort:
-      - name: internal-http
-        port: 8080
-        targetPort: internal-http
-
-  ingress: &jupiter_ingress
+  config:
+    Azure:
+      ConnectionString: *AZURE
+    Scylla:
+      LocalDatacenterName: *ScyllaDatacenterName
+      LocalKeyspaceSuffix: *ScyllaKeyspaceSuffix
+      ConnectionString: *SCYLLA
+  ingress:
     enabled: true
-    #class: nginx
-    annotations: &jupiter_ingress_annotations
+    annotations:
         kubernetes.io/ingress.class: nginx
-        nginx.ingress.kubernetes.io/proxy-body-size: 0 # Disable client_max_body_size
-        #nginx.ingress.kubernetes.io/use-regex: true
-        #nginx.ingress.kubernetes.io/rewrite-target: /$2
-
-    hostname: preview.thecoalition.horde-storage.gaming.azure.com
+        nginx.ingress.kubernetes.io/proxy-body-size: 0
+    hostname: *HOSTNAME
     path: /
     pathType: Prefix
     port: 8080
-
-    # Applies to main hostname in this section.
     tlsSecretName: ingress-tls-csi
-    # The name of the certificate in Azure Key Vault.
     tlsCertName: horde-storage-cert
 
   secretStore:
     enabled: true
-    clientID: "63af6de1-b382-4cea-b535-3520e1686737"
-    keyvaultName: westus-dev-uc-ddc-vault
-    resourceGroup: dev-unreal-cloud-ddc
-    subscriptionId: 69c75911-7439-4362-855d-c8f3ecbbf3de
-    tenantId: "72f988bf-86f1-41af-91ab-2d7cd011db47"
-
-  podAnnotations:
-    ad.datadoghq.com/horde-storage.tags: *datadog_pod_annotations_tags
-    ad.datadoghq.com/horde-storage.logs: '[{ "source":"csharp", "service" : "horde-storage"}]'
-  
-  podLabels: *datadog_pod_labels
-  env: *jupiter-env
-
-  useDotnetMonitorSidecar: true
-
-  nodeSelector: &jupiter_nodeselector
-    type: horde-storage
+    clientID: *OAuthClient
+    keyvaultName: *KEY_VAULT
+    subscriptionID: *SUBSCRIPTION_ID
+    tenantID: *TENANT_ID
 
   serviceAccount:
     name: workload-identity-sa
     annotations:
-      azure.workload.identity/client-id: 63af6de1-b382-4cea-b535-3520e1686737
-    labels:
-      azure.workload.identity/use: "true"
+      azure.workload.identity/client-id: *OAuthClient
 
-  extraVolumeMounts:
-    - mountPath: /var/run/secrets/tokens
-      name: azure-identity-token
-      readOnly: true
-  
-  extraVolumes:
-    - name: azure-identity-token
-      projected:
-        defaultMode: 420
-        sources:
-        - serviceAccountToken:
-            audience: api://AzureADTokenExchange
-            expirationSeconds: 3600
-            path: azure-identity-token
-
-  config:
-
-    ReplicationLogWriterImplementation: Scylla
-    ReferencesDbImplementation: Scylla
-    ContentIdStoreImplementation: Scylla
-    BlobIndexImplementation: Scylla
-
-    Scylla:
-      ConnectionString: akv!tc-unreal-vault|horde-db-connection-string
-
-      LocalDatacenterName: "West US"
-      LocalKeyspaceSuffix: "wus"
-      UseAzureCosmosDB: true
-      InlineBlobMaxSize: 0
-    
-    ConsistencyCheck:
-      EnableBlobStoreChecks: false
-      RunBlobStoreConsistencyCheckOnRootStore: false
-
-    Filesystem:
-      MaxSizeBytes: 512000000 #512GB
-      TriggerThresholdPercentage: 0.95
-      TargetThresholdPercentage: 0.85
-
-    Mongo:
-      ConnectionString: mongodb://localhost:27017
-
-    Azure:
-      ConnectionString: akv!tc-unreal-vault|horde-storage-connection-string
-
-    GC:
-      # these clean ups are being run on the worker
-      CleanOldRefRecords: false
-      CleanOldBlobs: false
-      
-    HostSwaggerDocumentation: false
-    UseNewDDCEndpoints: false
-
-  resources:
-    limits:
-      memory: "16Gi"
-    requests:
-      memory: "2Gi" # tree cache needs 1gb, plus some memory to work with
-
-  persistence:
-    enabled: false
-    # volume:
-      # hostPath:
-        # path: /data/horde, # In Epic's version, this is /data-nvme, we set up this to run on our attached nvme disk
-        # type: DirectoryOrCreate
-    # storageClass: data-hordeclass
-    # size: 384Gi
-
-    # storageClasses:
-      # - name: data-hordeclass
-        # provisioner: kubernetes.io/azure-disk
-        # parameters:
-          # storageaccounttype: Standard_LRS
-          # kind: managed
-
-    # Azure File Share supports accessMode = ReadWriteMany
-    # accessMode: 
-    # - ReadWriteMany
-    # storageClasses:          
-      # - name: data-hordeclass
-      #   provisioner: kubernetes.io/azure-file
-      #   parameters:
-      #     storageaccounttype: Standard_LRS
-
-  replication:
-    persistence:
-      enabled: false
-
-  worker:
-    enabled: false
+  env: *jupiter-env
 
 global:
-  cloudProvider: Azure
-  siteName: tchordestoragetest1
-  OverrideAppVersion: 0.36.1
+  siteName: unreal-cloud-ddc
+  ServiceCredentials:
+    OAuthClientId: *OAuthClient
+    OAuthClientSecret: *OAUTHSecret
+    OAuthLoginUrl: *OAuthLoginUrl
+    OAuthScope: *OAuthScope
 
   auth:
     enabled: true
@@ -196,69 +71,5 @@ global:
     schemes:
       Bearer: 
         implementation: "JWTBearer"
-        jwtAuthority: "https://login.microsoftonline.com/microsoft.onmicrosoft.com"
-        jwtAudience: "api://63af6de1-b382-4cea-b535-3520e1686737"
-
-    acls:
-    # This is an example of how to setup a claim to grant special privileges
-    # In this case we expect a group called app-horde-storage-admin to indicate admins which are granted full access to everything
-    - claims: 
-      - http://schemas.microsoft.com/ws/2008/06/identity/claims/role=Cache.full
-      actions:
-      - ReadObject
-      - WriteObject
-      - DeleteObject
-    - claims: 
-      - http://schemas.microsoft.com/ws/2008/06/identity/claims/role=Storage.full
-      actions:
-      - ReadObject
-      - WriteObject
-      - DeleteObject
-    - claims: 
-      - http://schemas.microsoft.com/ws/2008/06/identity/claims/role=transactionLog.full
-      actions:
-      - ReadObject
-      - WriteObject
-      - DeleteObject
-      - DeleteBucket
-      - DeleteNamespace
-      - ReadTransactionLog
-      - WriteTransactionLog
-    - claims: 
-      - http://schemas.microsoft.com/ws/2008/06/identity/claims/role=Admin
-      actions:
-      - ReadObject
-      - WriteObject
-      - DeleteObject
-      - DeleteBucket
-      - DeleteNamespace
-      - ReadTransactionLog
-      - WriteTransactionLog
-      - AdminAction
-
-  ServiceCredentials:
-    OAuthClientId: 63af6de1-b382-4cea-b535-3520e1686737 # tc-unreal-horde-build-app
-    OAuthClientSecret: akv!tc-unreal-vault|tc-unreal-horde-build-app-secret
-    OAuthLoginUrl: https://login.microsoftonline.com/microsoft.onmicrosoft.com/oauth2/v2.0/token
-    OAuthScope: api://63af6de1-b382-4cea-b535-3520e1686737/.default
-
-  namespaces:
-    Policies:
-      # By default no actions are supported.
-      "*":
-        acls:
-          - claims:
-            - "*"
-
-  #cluster:
-  #  peers:
-  #  - name: use
-  #    fullName: us-east-1
-  #    endpoints: 
-  #    - url: https://jupiter.devtools-dev.epicgames.com
-      
-  namespaces:
-    Policies:
-      "*":
-        claims:
-        - "*"
+        jwtAuthority: *jwtAuthority
+        jwtAudience: *jwtAudience
