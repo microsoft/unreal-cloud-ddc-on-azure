@@ -1,0 +1,22 @@
+apiVersion: v2
+name: tc-horde-storage
+description: The Coalition's wrapper chart over horde-storage.
+
+type: application
+
+version: 0.1.0
+
+icon: https://devtools-misc.s3.amazonaws.com/ue4logo.png
+home: http://unrealengine.com
+
+maintainers:
+  - name: Manu Varghese
+    email: manuvar@microsoft.com
+  - name: The Coalition Tools
+    email: tc-tools@microsoft.com
+
+dependencies:
+- name: horde-storage
+  version: 0.1.0
+  tags:
+    - horde.storage

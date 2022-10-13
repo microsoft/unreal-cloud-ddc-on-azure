@@ -1,0 +1,9 @@
+dependencies:
+- name: workload-identity-webhook
+  repository: https://azure.github.io/azure-workload-identity/charts
+  version: 0.13.0
+- name: Horde.Storage
+  repository: ""
+  version: 0.1.0
+digest: sha256:bcb3e1fb408eaf3849ca5497203da99a686b00af5444b1bde4a10174cff7cfae
+generated: "2022-10-13T13:04:57.797818986-04:00"
