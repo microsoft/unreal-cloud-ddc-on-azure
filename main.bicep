@@ -63,7 +63,7 @@ param servicePrincipalClientID string = ''
 param certificateName string = 'horde-storage-cert'
 
 @description('Set to true to agree to the terms and conditions of the Epic Games EULA found here: https://store.epicgames.com/en-US/eula')
-param unityEULA bool = false
+param epicEULA bool = false
 
 param managedResourceGroupName string = 'mrg'
 
@@ -159,8 +159,8 @@ resource hordeStorage 'Microsoft.Solutions/applications@2017-09-01' = {
       certificateName: {
         value: certificateName
       }
-      unityEULA: {
-        value: unityEULA
+      epicEULA: {
+        value: epicEula
       }      
     }
     jitAccessPolicy: null
