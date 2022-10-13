@@ -1,0 +1,34 @@
+
+controller:
+  replicaCount: 2
+  labels:
+    # Only need this label for the ServiceAccount but this is the only way to get it in there.
+    azure.workload.identity/use: "true"
+  nodeSelector:
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+  image:
+    repository: mcr.microsoft.com/oss/kubernetes/ingress/nginx-ingress-controller
+    tag: v1.0.4
+    digest: ""
+  admissionWebhooks:
+    patch:
+      nodeSelector:
+        kubernetes.io/os: linux
+        kubernetes.io/arch: amd64
+      image:
+        repository: mcr.microsoft.com/oss/kubernetes/ingress/kube-webhook-certgen
+        tag: v1.1.1
+        digest: ""
+  # service:
+    # annotations:
+      # service.beta.kubernetes.io/azure-load-balancer-resource-group: TC-Unreal-Horde-Deploy-Test
+    # loadBalancerIP: x.x.x.x # THIS SHOULD BE SPECIFIED THROUGH A PARAMETER DURING "helm install".
+defaultBackend:
+  nodeSelector:
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+  image:
+    repository: mcr.microsoft.com/oss/kubernetes/defaultbackend
+    tag: 1.4
+    digest: ""
