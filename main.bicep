@@ -160,7 +160,7 @@ resource hordeStorage 'Microsoft.Solutions/applications@2017-09-01' = {
         value: certificateName
       }
       epicEULA: {
-        value: epicEula
+        value: epicEULA
       }      
     }
     jitAccessPolicy: null
