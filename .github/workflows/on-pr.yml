@@ -4,6 +4,9 @@ name: Pull Request
 on:
   pull_request:
 
+concurrency: 
+  group: deploy-${{ github.head_ref }}
+
 jobs:
   DeployTemplate:
     runs-on: ubuntu-latest
