@@ -7,7 +7,7 @@
             "value": "westus"
         },
         "prefix": {
-            "value": "canary-"
+            "value": "canary-template-"
         },
         "servicePrincipalClientID": {
             "value": "3c6b6b30-7267-4c66-bb6e-aa78c23d4510"
