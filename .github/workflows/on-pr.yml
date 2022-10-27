@@ -1,0 +1,22 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License.
+name: Pull Request
+on:
+  pull_request:
+
+jobs:
+  DeployTemplate:
+    runs-on: ubuntu-latest
+    environment: canary
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Run Deployment Script with Canary Parameters
+      run: ${PWD}/scripts/deploy.sh main.parameters.json
