@@ -16,10 +16,10 @@
             "value": "preview.canary.horde-storage.gaming.azure.com"
         },
         "trafficManagerName": {
-            "value": "canary-horde-storage"
+            "value": "canary-horde-storage-template"
         },
         "trafficManagerDnsName": {
-            "value": "canary.horde-storage"
+            "value": "canary-template.horde-storage"
         },
         "secondaryLocations": {
             "value": [
