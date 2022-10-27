@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "metadata": "canary-horde-storage",
+    "parameters": {
+        "location": {
+            "value": "westus"
+        },
+        "prefix": {
+            "value": "canary-"
+        },
+        "servicePrincipalClientID": {
+            "value": "63af6de1-b382-4cea-b535-3520e1686737"
+        },
+        "hostname":{
+            "value": "preview.canary.horde-storage.gaming.azure.com"
+        },
+        "trafficManagerName": {
+            "value": "canary-horde-storage"
+        },
+        "trafficManagerDnsName": {
+            "value": "canary.horde-storage"
+        },
+        "secondaryLocations": {
+            "value": [
+                "eastus"
+            ]
+        },
+        "epicEULA": {
+            "value": true
+        }
+    }
+}
