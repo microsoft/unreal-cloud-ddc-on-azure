@@ -15,12 +15,6 @@
         "hostname":{
             "value": "preview.canary.horde-storage.gaming.azure.com"
         },
-        "trafficManagerName": {
-            "value": "canary-horde-storage-template"
-        },
-        "trafficManagerDnsName": {
-            "value": "canary-template.horde-storage"
-        },
         "secondaryLocations": {
             "value": [
                 "eastus"
