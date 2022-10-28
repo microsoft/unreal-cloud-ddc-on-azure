@@ -12,24 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     environment: canary
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - name: Get specific changed files
-      id: changed-files-specific
-      uses: tj-actions/changed-files@v31
-      with:
-        files: |
-          configs/*/parameters.json
-    - name: Azure Login
-      uses: azure/login@v1
+    - uses: actions/checkout@v3
+    - uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-
     - name: Run Deployment Script
       run: |
-        for file in ${{ steps.changed-files.outputs.modified_files }}; do
-          ${PWD}/scripts/deploy "$file"
-          ${PWD}/scripts/completeDeployment.sh "$file"
-        done
+        ${PWD}/scripts/deploy main.parameters.json
+        ${PWD}/scripts/completeDeployment.sh main.parameters.json
