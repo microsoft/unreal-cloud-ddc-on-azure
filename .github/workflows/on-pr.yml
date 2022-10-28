@@ -18,5 +18,5 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
     - name: Run Deployment Script
       run: |
-        ${PWD}/scripts/deploy main.parameters.json
+        ${PWD}/scripts/deploy.sh main.parameters.json
         ${PWD}/scripts/completeDeployment.sh main.parameters.json
