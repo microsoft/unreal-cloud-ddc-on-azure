@@ -23,3 +23,5 @@ jobs:
 
     - name: Run Deployment Script with Canary Parameters
       run: ${PWD}/scripts/deploy.sh main.parameters.json
+    - name: Run Post Deployment Script
+      run: ${PWD}/scripts/completeDeployment.sh main.parameters.json
