@@ -3,6 +3,7 @@
 #
 # PARAMETERS_FILE: Parmaeters file used for deployment
 PARAMETERS_FILE=$1
+AAD_SECRET=$2
 
 LOCATION=$(jq -r '.parameters.location.value' "$PARAMETERS_FILE")
 RESOURCE_GROUP=$(jq -r '.metadata' "$PARAMETERS_FILE")
@@ -19,4 +20,5 @@ az deployment group create \
     --resource-group "$RESOURCE_GROUP" \
     --template-file main.bicep \
     --parameters "$PARAMETERS_FILE" \
+    --parameters servicePrincipalSecret=$AAD_SECRET \
     || exit 1
