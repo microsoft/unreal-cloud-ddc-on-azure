@@ -29,4 +29,4 @@ jobs:
         python3 -m pip install --upgrade pip
         python3 -m pip install -r requirements.txt
 
-        python3 main.py --verbose --seed pr --host https://template.unreal-cloud-ddc.gaming.azure.com all || exit 1
+        python3 main.py --verbose --host https://template.unreal-cloud-ddc.gaming.azure.com all --seed pr || exit 1
