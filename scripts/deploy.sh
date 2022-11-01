@@ -8,7 +8,7 @@ LOCATION=$(jq -r '.parameters.location.value' "$PARAMETERS_FILE")
 RESOURCE_GROUP=$(jq -r '.metadata' "$PARAMETERS_FILE")
 
 echo '##[section]Horde Storage - Deploy Bicep Template'
-az bicep install --version v0.10.61
+az bicep install --version v0.11.1
 
 az group create \
     --name "$RESOURCE_GROUP"\
