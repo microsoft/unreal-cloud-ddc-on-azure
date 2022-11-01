@@ -27,4 +27,9 @@ jobs:
         python3 -m pip install --upgrade pip
         python3 -m pip install -r requirements.txt
 
-        python3 main.py --verbose --seed --host https://preview.thecoalition.horde-storage.gaming.azure.com all || exit 1
+        python3 main.py \
+          --header "Authorization: Bearer ${{ secrets.TOKEN }}"
+          --verbose \
+          --seed \
+          --host https://preview.thecoalition.horde-storage.gaming.azure.com \
+          all || exit 1
