@@ -5,9 +5,6 @@
     "parameters": {
         "location": {
             "value": "southcentralus"
-        },    
-        "servicePrincipalObjectID": {
-            "value": ""
         },
         "servicePrincipalClientID": {
             "value": ""
