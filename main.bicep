@@ -62,6 +62,9 @@ param servicePrincipalClientID string = ''
 @secure()
 param servicePrincipalSecret string = ''
 
+@description('Enable to configure certificate. Default: true')
+param enableCert bool = true
+
 @description('Name of Certificate (Default certificate is self-signed)')
 param certificateName string = 'unreal-cloud-ddc-cert'
 
@@ -86,7 +89,7 @@ param publishers object = {
     name: 'preview'
     product: 'horde-storage-preview'
     publisher: 'microsoft-azure-gaming'
-    version: '0.1.11'
+    version: '0.1.18'
   }
 }
 
@@ -182,6 +185,9 @@ resource hordeStorage 'Microsoft.Solutions/applications@2017-09-01' = {
       }
       isZoneRedundant: {
         value: isZoneRedundant
+      }
+      enableCert: {
+        value: enableCert
       }
     }
     jitAccessPolicy: null
