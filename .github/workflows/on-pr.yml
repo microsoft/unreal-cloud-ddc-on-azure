@@ -4,31 +4,38 @@ name: Pull Request
 on:
   pull_request:
 
-concurrency: 
-  group: deploy-${{ github.head_ref }}
-
 jobs:
-  DeployTemplate:
+  changed-files:
     runs-on: ubuntu-latest
-    environment: canary
+
+    outputs:
+      any_changed : "${{ steps.changed-files-specific.outputs.any_changed }}"
     steps:
     - name: Checkout
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
-    - name: Get specific changed files
-      id: changed-files-specific
-      uses: tj-actions/changed-files@v31
+
+    - name: Get changed files
+      id: changed-files
+      uses: tj-actions/changed-files@v34
       with:
         files: |
-          configs/*/parameters.json
+          main.bicep
+
+  DeployTemplate:
+    runs-on: ubuntu-latest
+    needs: changed-files
+    environment: canary
+    if: needs.changed-files.outputs.any_changed == 'true'
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    
     - name: Azure Login
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Run Deployment Script
-      run: |
-        for file in ${{ steps.changed-files.outputs.modified_files }}; do
-          ${PWD}/scripts/deploy "$file"
-        done
+    - name: Run Deployment Script with Canary Parameters
+      run: ${PWD}/scripts/deploy.sh main.parameters.json
