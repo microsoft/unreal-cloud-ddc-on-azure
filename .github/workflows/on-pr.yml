@@ -21,7 +21,7 @@ jobs:
       uses: tj-actions/changed-files@v34
       with:
         files: |
-          main.bicep
+          *.bicep
 
   DeployTemplate:
     runs-on: ubuntu-latest
