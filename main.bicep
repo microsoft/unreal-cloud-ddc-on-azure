@@ -1,17 +1,16 @@
 @description('Deployment Location')
 param location string = resourceGroup().location
 
+param resourceGroupName string = 'canary-horde-storage'
+
 @description('Secondary Deployment Locations')
 param secondaryLocations array = []
 
-@allowed([
-  'new'
-  'existing'
-])
+@allowed([ 'new', 'existing' ])
 param newOrExistingKubernetes string = 'new'
 param prefix string = uniqueString(location, resourceGroup().id, deployment().name)
 param name string = 'horde-storage'
-param agentPoolCount int = 3
+param agentPoolCount int = 2
 param agentPoolName string = 'k8agent'
 param vmSize string = 'Standard_L8s_v3'
 param hostname string = 'deploy1.horde-storage.gaming.azure.com'
@@ -20,47 +19,44 @@ param isZoneRedundant bool = false
 @description('Running this template requires roleAssignment permission on the Resource Group, which require an Owner role. Set this to false to deploy some of the resources')
 param assignRole bool = true
 
-@allowed([
-  'new'
-  'existing'
-])
-param newOrExistingStorageAccount string = 'new'
-param storageAccountName string = 'hordestore${uniqueString(resourceGroup().id, subscription().subscriptionId, publishers[publisher].version, location)}'
+@allowed([ 'Standard', 'Premium' ])
+@description('Storage Account Tier. Standard or Premium.')
+param storageAccountTier string = 'Standard'
 
-@allowed([
-  'new'
-  'existing'
-])
+@description('Storage Account Type. Use Zonal Redundant Storage when able.')
+param storageAccountType string = isZoneRedundant ? '${storageAccountTier}_ZRS' : '${storageAccountTier}_LRS'
+
+@allowed([ 'new', 'existing' ])
+param newOrExistingStorageAccount string = 'new'
+param storageAccountName string = 'hordestore${uniqueString(resourceGroup().id, subscription().subscriptionId, location, storageAccountType)}'
+
+@allowed([ 'new', 'existing' ])
 param newOrExistingKeyVault string = 'new'
 param keyVaultName string = take('${uniqueString(resourceGroup().id, subscription().subscriptionId, publishers[publisher].version, location)}', 24)
 
-@allowed([
-  'new'
-  'existing'
-])
+@allowed([ 'new', 'existing' ])
 param newOrExistingPublicIp string = 'new'
 param publicIpName string = 'hordePublicIP${uniqueString(resourceGroup().id, subscription().subscriptionId, publishers[publisher].version, location)}'
 
-@allowed([
-  'new'
-  'existing'
-])
+@allowed([ 'new', 'existing' ])
 param newOrExistingTrafficManager string = 'new'
 param trafficManagerName string = 'hordePublicIP${uniqueString(resourceGroup().id, subscription().subscriptionId, publishers[publisher].version, location)}'
 @description('Relative DNS name for the traffic manager profile, must be globally unique.')
 param trafficManagerDnsName string = 'tmp-${uniqueString(resourceGroup().id, subscription().id)}'
 
-@allowed([
-  'new'
-  'existing'
-])
+@allowed([ 'new', 'existing' ])
 param newOrExistingCosmosDB string = 'new'
-param cosmosDBName string = 'hordeDB-${uniqueString(resourceGroup().id, subscription().subscriptionId, publishers[publisher].version, location)}'
+param cosmosDBName string = 'hordeDB-${uniqueString(resourceGroup().id, subscription().subscriptionId, location)}'
 
 param servicePrincipalClientID string = ''
 
+param workerServicePrincipalClientID string = servicePrincipalClientID
+
 @secure()
-param servicePrincipalSecret string = ''
+param workerServicePrincipalSecret string = ''
+
+@description('Enable to configure certificate. Default: true')
+param enableCert bool = true
 
 @description('Name of Certificate (Default certificate is self-signed)')
 param certificateName string = 'unreal-cloud-ddc-cert'
@@ -70,34 +66,52 @@ param epicEULA bool = false
 
 param managedResourceGroupName string = 'mrg'
 
-@allowed([
-  'dev'
-  'prod'
-])
+@allowed([ 'dev', 'prod' ])
 param publisher string = 'prod'
 param publishers object = {
   dev: {
     name: 'preview'
-    product: 'horde-storage-preview'
+    product: 'unreal-cloud-ddc-temp'
     publisher: 'microsoftcorporation1590077852919'
-    version: '1.0.730'
+    version: '0.0.0'
   }
   prod: {
     name: 'preview'
-    product: 'horde-storage-preview'
+    product: 'unreal-cloud-ddc-preview'
     publisher: 'microsoft-azure-gaming'
-    version: '0.1.19'
+    version: '0.1.27'
   }
 }
 
 var certificateIssuer = 'Subscription-Issuer'
 var issuerProvider = 'OneCertV2-PublicCA'
 var managedResourceGroupId = '${subscription().id}/resourceGroups/${resourceGroup().name}-${managedResourceGroupName}-${replace(publishers[publisher].version,'.','-')}'
+var appName = '${prefix}${name}-${replace(publishers[publisher].version,'.','-')}'
+
+module cassandra 'modules/documentDB/databaseAccounts.bicep' = {
+  name: 'cassandra-${uniqueString(location, resourceGroup().name)}'
+  params: {
+    location: location
+    secondaryLocations: secondaryLocations
+    newOrExisting: newOrExistingCosmosDB
+    name: 'ddc${cosmosDBName}'
+  }
+}
+
+module storageAccount 'modules/storage/storageAccounts.bicep' = [for location in union([ location ], secondaryLocations): {
+  name: 'storageAccount-${uniqueString(location, resourceGroup().id, deployment().name)}'
+  params: {
+    location: location
+    name: take('${take(location, 8)}${storageAccountName}',24)
+    storageAccountTier: storageAccountTier
+    storageAccountType: storageAccountType
+  }
+}]
 
 resource hordeStorage 'Microsoft.Solutions/applications@2017-09-01' = {
   location: location
   kind: 'MarketPlace'
-  name: '${prefix}${name}-${replace(publishers[publisher].version,'.','-')}'
+  name: appName
   plan: publishers[publisher]
   properties: {
     managedResourceGroupId: managedResourceGroupId
@@ -136,11 +150,14 @@ resource hordeStorage 'Microsoft.Solutions/applications@2017-09-01' = {
         value: assignRole
       }
       newOrExistingStorageAccount: {
-        value: newOrExistingStorageAccount
+        value: 'existing'
       }
       storageAccountName: {
         value: storageAccountName
       }
+      storageResourceGroupName: {
+        value: resourceGroupName
+      }      
       newOrExistingKeyVault: {
         value: newOrExistingKeyVault
       }
@@ -163,16 +180,22 @@ resource hordeStorage 'Microsoft.Solutions/applications@2017-09-01' = {
         value: '${trafficManagerDnsName}-${replace(publishers[publisher].version,'.','-')}'
       }
       newOrExistingCosmosDB: {
-        value: newOrExistingCosmosDB
+        value: 'existing'
       }
       cosmosDBName: {
-        value: cosmosDBName
+        value: 'ddc${cosmosDBName}'
+      }
+      cosmosDBRG: {
+        value: resourceGroupName
       }
       servicePrincipalClientID: {
         value: servicePrincipalClientID
       }
-      servicePrincipalSecret: {
-        value: servicePrincipalSecret
+      workerServicePrincipalClientID: {
+        value: workerServicePrincipalClientID
+      }
+      workerServicePrincipalSecret: {
+        value: workerServicePrincipalSecret
       }
       certificateName: {
         value: certificateName
@@ -182,6 +205,9 @@ resource hordeStorage 'Microsoft.Solutions/applications@2017-09-01' = {
       }
       isZoneRedundant: {
         value: isZoneRedundant
+      }
+      enableCert: {
+        value: enableCert
       }
     }
     jitAccessPolicy: null
@@ -196,3 +222,6 @@ module trafficManager 'modules/network/trafficManagerProfiles.bicep' = {
     trafficManagerDnsName: '${prefix}preview.unreal-cloud-ddc'
   }
 }
+
+output prefix string = prefix
+output appName string = appName
