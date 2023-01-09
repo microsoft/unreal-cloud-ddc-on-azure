@@ -175,14 +175,11 @@ resource hordeStorage 'Microsoft.Solutions/applications@2017-09-01' = {
         value: assignRole
       }
       newOrExistingStorageAccount: {
-        value: 'existing'
+        value: newOrExistingStorageAccount
       }
       storageAccountName: {
         value: storageAccountName
       }
-      storageResourceGroupName: {
-        value: resourceGroupName
-      }      
       newOrExistingKeyVault: {
         value: newOrExistingKeyVault
       }
