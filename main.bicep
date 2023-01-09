@@ -108,8 +108,33 @@ module storageAccount 'modules/storage/storageAccounts.bicep' = [for location in
   }
 }]
 
+resource userAssignedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
+  name: '${prefix}-id'
+  location: location
+}
+
+var rbacRolesNeeded = [
+  'b24988ac-6180-42a0-ab88-20f7382dd24c' //Contributor
+  '17d1049b-9a84-46fb-8f53-869881c3d3ab'
+]
+
+resource rbac 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for roleDefId in rbacRolesNeeded: {
+  name: guid(resourceGroup().name, roleDefId, userAssignedIdentity.id)
+  properties: {
+    roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions', roleDefId)
+    principalId: userAssignedIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
+  }
+}]
+
 resource hordeStorage 'Microsoft.Solutions/applications@2017-09-01' = {
   location: location
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${userAssignedIdentity.id}': {}
+    }
+  }  
   kind: 'MarketPlace'
   name: appName
   plan: publishers[publisher]
