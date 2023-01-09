@@ -9,7 +9,7 @@
             "value": "canary-ddc-storage"
         },
         "prefix": {
-            "value": "canary-template-"
+            "value": "dev-canary-"
         },
         "servicePrincipalClientID": {
             "value": "3c6b6b30-7267-4c66-bb6e-aa78c23d4510"
