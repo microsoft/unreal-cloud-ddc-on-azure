@@ -100,12 +100,6 @@ module cassandra 'modules/documentDB/databaseAccounts.bicep' = {
 
 resource hordeStorage 'Microsoft.Solutions/applications@2017-09-01' = {
   location: location
-  identity: {
-    type: 'UserAssigned'
-    userAssignedIdentities: {
-      '${userAssignedIdentity.id}': {}
-    }
-  }  
   kind: 'MarketPlace'
   name: appName
   plan: publishers[publisher]
