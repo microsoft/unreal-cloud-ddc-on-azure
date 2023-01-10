@@ -88,16 +88,6 @@ var issuerProvider = 'OneCertV2-PublicCA'
 var managedResourceGroupId = '${subscription().id}/resourceGroups/${resourceGroup().name}-${managedResourceGroupName}-${replace(publishers[publisher].version,'.','-')}'
 var appName = '${prefix}${name}-${replace(publishers[publisher].version,'.','-')}'
 
-module cassandra 'modules/documentDB/databaseAccounts.bicep' = {
-  name: 'cassandra-${uniqueString(location, resourceGroup().name)}'
-  params: {
-    location: location
-    secondaryLocations: secondaryLocations
-    newOrExisting: newOrExistingCosmosDB
-    name: 'ddc${cosmosDBName}'
-  }
-}
-
 resource hordeStorage 'Microsoft.Solutions/applications@2017-09-01' = {
   location: location
   kind: 'MarketPlace'
@@ -167,13 +157,7 @@ resource hordeStorage 'Microsoft.Solutions/applications@2017-09-01' = {
         value: '${trafficManagerDnsName}-${replace(publishers[publisher].version,'.','-')}'
       }
       newOrExistingCosmosDB: {
-        value: 'existing'
-      }
-      cosmosDBName: {
-        value: 'ddc${cosmosDBName}'
-      }
-      cosmosDBRG: {
-        value: resourceGroupName
+        value: newOrExistingCosmosDB
       }
       servicePrincipalClientID: {
         value: servicePrincipalClientID
