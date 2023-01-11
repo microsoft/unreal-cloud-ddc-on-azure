@@ -7,10 +7,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
+        with:          
           token: ${{ secrets.PAT }}
-
-      - name: Template Repository Sync
-        uses: ahmadnassri/action-template-repository-sync@v2.0.4
+      - name: actions-template-sync
+        uses: AndreasAugustin/actions-template-sync@v0.4.2-draft
         with:
-          github-token: ${{ secrets.PAT }}
+          github_token: ${{ secrets.PAT }}
+          source_repo_path: microsoft/unreal-cloud-ddc-on-azure
