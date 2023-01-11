@@ -1,8 +1,0 @@
-additional:
-  - "internal-epic-cloud-ddc" # include
-
-files:
-  - ".gitignore"  # include
-
-  - "!.github/workflows/template-sync.yml"
-  - "!.github/template-sync.yml"
