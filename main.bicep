@@ -28,7 +28,7 @@ param storageAccountType string = isZoneRedundant ? '${storageAccountTier}_ZRS' 
 
 @allowed([ 'new', 'existing' ])
 param newOrExistingStorageAccount string = 'new'
-param storageAccountName string = 'hordestore${uniqueString(resourceGroup().id, subscription().subscriptionId, location, storageAccountType)}'
+param storageAccountName string = 'hordestore${uniqueString(resourceGroup().id, subscription().subscriptionId, location, storageAccountType, newOrExistingStorageAccount == 'new' ? publishers[publisher].version : '')}'
 
 @allowed([ 'new', 'existing' ])
 param newOrExistingKeyVault string = 'new'
@@ -41,6 +41,7 @@ param publicIpName string = 'hordePublicIP${uniqueString(resourceGroup().id, sub
 @allowed([ 'new', 'existing' ])
 param newOrExistingTrafficManager string = 'new'
 param trafficManagerName string = 'hordePublicIP${uniqueString(resourceGroup().id, subscription().subscriptionId, publishers[publisher].version, location)}'
+
 @description('Relative DNS name for the traffic manager profile, must be globally unique.')
 param trafficManagerDnsName string = 'tmp-${uniqueString(resourceGroup().id, subscription().id)}'
 
