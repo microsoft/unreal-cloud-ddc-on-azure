@@ -1,7 +1,7 @@
 @description('Deployment Location')
 param location string = resourceGroup().location
 
-param resourceGroupName string = 'canary-horde-storage'
+param resourceGroupName string = resourceGroup().name
 
 @description('Secondary Deployment Locations')
 param secondaryLocations array = []
