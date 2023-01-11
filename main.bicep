@@ -9,11 +9,11 @@ param secondaryLocations array = []
 @allowed([ 'new', 'existing' ])
 param newOrExistingKubernetes string = 'new'
 param prefix string = uniqueString(location, resourceGroup().id, deployment().name)
-param name string = 'horde-storage'
+param name string = 'ddc-storage'
 param agentPoolCount int = 2
 param agentPoolName string = 'k8agent'
 param vmSize string = 'Standard_L8s_v3'
-param hostname string = 'deploy1.horde-storage.gaming.azure.com'
+param hostname string = 'deploy1.ddc-storage.gaming.azure.com'
 param isZoneRedundant bool = false
 
 @description('Running this template requires roleAssignment permission on the Resource Group, which require an Owner role. Set this to false to deploy some of the resources')
@@ -28,7 +28,7 @@ param storageAccountType string = isZoneRedundant ? '${storageAccountTier}_ZRS' 
 
 @allowed([ 'new', 'existing' ])
 param newOrExistingStorageAccount string = 'new'
-param storageAccountName string = 'hordestore${uniqueString(resourceGroup().id, subscription().subscriptionId, location, storageAccountType, newOrExistingStorageAccount == 'new' ? publishers[publisher].version : '')}'
+param storageAccountName string = 'ddcstore${uniqueString(resourceGroup().id, subscription().subscriptionId, location, storageAccountType, newOrExistingStorageAccount == 'new' ? publishers[publisher].version : '')}'
 
 @allowed([ 'new', 'existing' ])
 param newOrExistingKeyVault string = 'new'
@@ -36,18 +36,18 @@ param keyVaultName string = take('${uniqueString(resourceGroup().id, subscriptio
 
 @allowed([ 'new', 'existing' ])
 param newOrExistingPublicIp string = 'new'
-param publicIpName string = 'hordePublicIP${uniqueString(resourceGroup().id, subscription().subscriptionId, publishers[publisher].version, location)}'
+param publicIpName string = 'ddcPublicIP${uniqueString(resourceGroup().id, subscription().subscriptionId, publishers[publisher].version, location)}'
 
 @allowed([ 'new', 'existing' ])
 param newOrExistingTrafficManager string = 'new'
-param trafficManagerName string = 'hordePublicIP${uniqueString(resourceGroup().id, subscription().subscriptionId, publishers[publisher].version, location)}'
+param trafficManagerName string = 'ddcPublicIP${uniqueString(resourceGroup().id, subscription().subscriptionId, publishers[publisher].version, location)}'
 
 @description('Relative DNS name for the traffic manager profile, must be globally unique.')
 param trafficManagerDnsName string = 'tmp-${uniqueString(resourceGroup().id, subscription().id)}'
 
 @allowed([ 'new', 'existing' ])
 param newOrExistingCosmosDB string = 'new'
-param cosmosDBName string = 'hordeDB-${uniqueString(resourceGroup().id, subscription().subscriptionId, location)}'
+param cosmosDBName string = 'ddcDB-${uniqueString(resourceGroup().id, subscription().subscriptionId, location)}'
 
 param servicePrincipalClientID string = ''
 
@@ -89,7 +89,7 @@ var issuerProvider = 'OneCertV2-PublicCA'
 var managedResourceGroupId = '${subscription().id}/resourceGroups/${resourceGroup().name}-${managedResourceGroupName}-${replace(publishers[publisher].version,'.','-')}'
 var appName = '${prefix}${name}-${replace(publishers[publisher].version,'.','-')}'
 
-resource hordeStorage 'Microsoft.Solutions/applications@2017-09-01' = {
+resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
   location: location
   kind: 'MarketPlace'
   name: appName
