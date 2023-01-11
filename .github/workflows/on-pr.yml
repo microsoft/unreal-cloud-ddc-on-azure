@@ -38,4 +38,6 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Run Deployment Script with Canary Parameters
-      run: ${PWD}/scripts/deploy.sh main.parameters.json
+      run: |
+        ${PWD}/scripts/deploy.sh main.parameters.json
+        ${PWD}/scripts/setupPublicIP.sh main.parameters.json
