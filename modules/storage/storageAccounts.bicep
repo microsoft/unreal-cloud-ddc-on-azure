@@ -5,6 +5,9 @@ param name string = uniqueString(resourceGroup().id)
 @allowed([ 'new', 'existing' ])
 param newOrExisting string = 'new'
 
+@description('Resource Group')
+param resourceGroupName string = resourceGroup().name
+
 param subnetID string = ''
 param enableVNET bool = false
 
@@ -54,7 +57,10 @@ resource newStorageAccount 'Microsoft.Storage/storageAccounts@2019-06-01' = if (
   }
 }
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2021-09-01' existing = { name: name }
+resource storageAccount 'Microsoft.Storage/storageAccounts@2021-09-01' existing = {
+    scope: resourceGroup(resourceGroupName)
+    name: name
+}
 
 var keys = newOrExisting == 'new' ? listKeys(newStorageAccount.id, newStorageAccount.apiVersion) : listKeys(storageAccount.id, storageAccount.apiVersion)
 var blobStorageConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${keys.keys[0].value}'
