@@ -22,6 +22,7 @@ jobs:
       with:
         files: |
           *.bicep
+          configs/*/parameters.json
 
   DeployTemplate:
     runs-on: ubuntu-latest
