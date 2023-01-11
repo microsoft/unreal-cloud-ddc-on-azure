@@ -6,6 +6,9 @@
         "location": {
             "value": "eastus"
         },
+        "resourceGroupName": {
+            "value": "studio-unreal-cloud-ddc",
+        },
         "servicePrincipalClientID": {
             "value": ""
         },
