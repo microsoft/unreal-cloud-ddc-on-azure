@@ -78,9 +78,9 @@ param publishers object = {
   }
   prod: {
     name: 'preview'
-    product: 'unreal-cloud-ddc-preview'
+    product: 'horde-storage-preview'
     publisher: 'microsoft-azure-gaming'
-    version: '0.1.32'
+    version: '0.1.24'
   }
 }
 
@@ -89,7 +89,7 @@ var issuerProvider = 'OneCertV2-PublicCA'
 var managedResourceGroupId = '${subscription().id}/resourceGroups/${resourceGroup().name}-${managedResourceGroupName}-${replace(publishers[publisher].version,'.','-')}'
 var appName = '${prefix}${name}-${replace(publishers[publisher].version,'.','-')}'
 
-resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
+resource ddcStorage 'Microsoft.Solutions/applications@2021-07-01' = {
   location: location
   kind: 'MarketPlace'
   name: appName
