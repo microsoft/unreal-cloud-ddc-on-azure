@@ -6,7 +6,7 @@
             "value": "westus"
         },
         "resourceGroupName": {
-            "value": "canary-ddc-storage"
+            "value": "uc-ddc"
         },
         "secondaryLocations": {
             "value": [
