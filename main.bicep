@@ -128,7 +128,7 @@ resource ddcStorage 'Microsoft.Solutions/applications@2021-07-01' = {
         value: issuerProvider
       }
       assignRole: {
-        value: false
+        value: assignRole
       }
       newOrExistingStorageAccount: {
         value: newOrExistingStorageAccount
