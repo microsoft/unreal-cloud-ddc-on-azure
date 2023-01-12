@@ -88,8 +88,8 @@ param publishers object = {
 
 var certificateIssuer = 'Subscription-Issuer'
 var issuerProvider = 'OneCertV2-PublicCA'
-var managedResourceGroupName = '${resourceGroup().name}-${managedResourceGroupName}-${replace(publishers[publisher].version,'.','-')}'
-var managedResourceGroupId = '${subscription().id}/resourceGroups/${managedResourceGroupName}'
+var managedResourceGroup = '${resourceGroup().name}-${managedResourceGroupName}-${replace(publishers[publisher].version,'.','-')}'
+var managedResourceGroupId = '${subscription().id}/resourceGroups/${managedResourceGroup}'
 var appName = '${prefix}${name}-${replace(publishers[publisher].version,'.','-')}'
 
 module cassandra 'modules/documentDB/databaseAccounts.bicep' = if(seperateResources) {
@@ -160,7 +160,7 @@ resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
         value: storageAccountName
       }
       storageAccountResourceGroupName: {
-        value: seperateResources ? resourceGroupName : managedResourceGroupName
+        value: seperateResources ? resourceGroupName : managedResourceGroup
       }
       newOrExistingKeyVault: {
         value: newOrExistingKeyVault
@@ -190,7 +190,7 @@ resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
         value: 'ddc${cosmosDBName}'
       }
       cosmosDBRG: {
-        value: seperateResources ? resourceGroupName : managedResourceGroupName
+        value: seperateResources ? resourceGroupName : managedResourceGroup
       }
       servicePrincipalClientID: {
         value: servicePrincipalClientID
