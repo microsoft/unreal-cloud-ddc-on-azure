@@ -78,9 +78,9 @@ param publishers object = {
   }
   prod: {
     name: 'preview'
-    product: 'unreal-cloud-ddc-preview'
+    product: 'horde-storage-preview'
     publisher: 'microsoft-azure-gaming'
-    version: '0.1.32'
+    version: '0.1.26'
   }
 }
 
