@@ -67,7 +67,7 @@ param epicEULA bool = false
 
 param managedResourceGroupName string = 'mrg'
 
-param seperateResources string = false
+param seperateResources bool = false
 
 @allowed([ 'dev', 'prod' ])
 param publisher string = 'prod'
