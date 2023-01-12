@@ -90,7 +90,6 @@ var managedResourceGroupId = '${subscription().id}/resourceGroups/${resourceGrou
 var appName = '${prefix}${name}-${replace(publishers[publisher].version,'.','-')}'
 
 resource ddcStorage 'Microsoft.Solutions/applications@2021-07-01' = {
-  scope: subscription()
   location: location
   kind: 'MarketPlace'
   name: appName
