@@ -88,7 +88,7 @@ param publishers object = {
 
 var certificateIssuer = 'Subscription-Issuer'
 var issuerProvider = 'OneCertV2-PublicCA'
-var managedResourceGroupName = ${resourceGroup().name}-${managedResourceGroupName}-${replace(publishers[publisher].version,'.','-')}
+var managedResourceGroupName = '${resourceGroup().name}-${managedResourceGroupName}-${replace(publishers[publisher].version,'.','-')}'
 var managedResourceGroupId = '${subscription().id}/resourceGroups/${managedResourceGroupName}'
 var appName = '${prefix}${name}-${replace(publishers[publisher].version,'.','-')}'
 
