@@ -43,7 +43,7 @@ param newOrExistingTrafficManager string = 'new'
 param trafficManagerName string = 'ddcPublicIP${uniqueString(resourceGroup().id, subscription().subscriptionId, publishers[publisher].version, location)}'
 
 @description('Relative DNS name for the traffic manager profile, must be globally unique.')
-param trafficManagerDnsName string = 'tmp-${uniqueString(resourceGroup().id, subscription().id)}'
+param trafficManagerDnsPrefix string = 'tmp-${uniqueString(resourceGroup().id, subscription().id)}'
 
 @allowed([ 'new', 'existing' ])
 param newOrExistingCosmosDB string = 'new'
@@ -66,6 +66,8 @@ param certificateName string = 'unreal-cloud-ddc-cert'
 param epicEULA bool = false
 
 param managedResourceGroupName string = 'mrg'
+
+param trafficManagerDnsName string = '${prefix}preview.unreal-cloud-ddc'
 
 @allowed([ 'dev', 'prod' ])
 param publisher string = 'prod'
@@ -155,7 +157,7 @@ resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
         value: trafficManagerName
       }
       trafficManagerDnsName: {
-        value: '${trafficManagerDnsName}-${replace(publishers[publisher].version,'.','-')}'
+        value: '${trafficManagerDnsPrefix}-${replace(publishers[publisher].version,'.','-')}'
       }
       newOrExistingCosmosDB: {
         value: newOrExistingCosmosDB
@@ -191,7 +193,7 @@ module trafficManager 'modules/network/trafficManagerProfiles.bicep' = {
   params: {
     name: '${prefix}ddc'
     newOrExisting: 'new'
-    trafficManagerDnsName: '${prefix}preview.unreal-cloud-ddc'
+    trafficManagerDnsName: trafficManagerDnsName
   }
 }
 
