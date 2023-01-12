@@ -22,4 +22,5 @@ az deployment group create \
     --template-file main.bicep \
     --parameters "$PARAMETERS_FILE" \
     --parameters workerServicePrincipalSecret=$AAD_SECRET \
+    --subscription "Azure-Gaming-Canary" \
     || exit 1
