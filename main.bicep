@@ -67,6 +67,8 @@ param epicEULA bool = false
 
 param managedResourceGroupName string = 'mrg'
 
+param seperateResources string = false
+
 @allowed([ 'dev', 'prod' ])
 param publisher string = 'prod'
 param publishers object = {
@@ -86,8 +88,29 @@ param publishers object = {
 
 var certificateIssuer = 'Subscription-Issuer'
 var issuerProvider = 'OneCertV2-PublicCA'
-var managedResourceGroupId = '${subscription().id}/resourceGroups/${resourceGroup().name}-${managedResourceGroupName}-${replace(publishers[publisher].version,'.','-')}'
+var managedResourceGroup = '${resourceGroup().name}-${managedResourceGroupName}-${replace(publishers[publisher].version,'.','-')}'
+var managedResourceGroupId = '${subscription().id}/resourceGroups/${managedResourceGroup}'
 var appName = '${prefix}${name}-${replace(publishers[publisher].version,'.','-')}'
+
+module cassandra 'modules/documentDB/databaseAccounts.bicep' = if(seperateResources) {
+  name: 'cassandra-${uniqueString(location, resourceGroup().name)}'
+  params: {
+    location: location
+    secondaryLocations: secondaryLocations
+    newOrExisting: newOrExistingCosmosDB
+    name: 'ddc${cosmosDBName}'
+  }
+}
+
+module storageAccount 'modules/storage/storageAccounts.bicep' = [for location in union([ location ], secondaryLocations): if(seperateResources) {
+  name: 'storageAccount-${uniqueString(location, resourceGroup().id, deployment().name)}'
+  params: {
+    location: location
+    name: take('${take(location, 8)}${storageAccountName}',24)
+    storageAccountTier: storageAccountTier
+    storageAccountType: storageAccountType
+  }
+}]
 
 resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
   location: location
@@ -131,10 +154,13 @@ resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
         value: assignRole
       }
       newOrExistingStorageAccount: {
-        value: newOrExistingStorageAccount
+        value: seperateResources ? 'existing' : newOrExistingStorageAccount
       }
       storageAccountName: {
         value: storageAccountName
+      }
+      storageAccountResourceGroupName: {
+        value: seperateResources ? resourceGroupName : managedResourceGroup
       }
       newOrExistingKeyVault: {
         value: newOrExistingKeyVault
@@ -158,7 +184,13 @@ resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
         value: '${trafficManagerDnsName}-${replace(publishers[publisher].version,'.','-')}'
       }
       newOrExistingCosmosDB: {
-        value: newOrExistingCosmosDB
+        value: seperateResources ? 'existing' : newOrExistingCosmosDB
+      }
+      cosmosDBName: {
+        value: 'ddc${cosmosDBName}'
+      }
+      cosmosDBRG: {
+        value: seperateResources ? resourceGroupName : managedResourceGroup
       }
       servicePrincipalClientID: {
         value: servicePrincipalClientID
