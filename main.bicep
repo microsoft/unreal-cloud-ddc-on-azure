@@ -92,7 +92,7 @@ var managedResourceGroupName = ${resourceGroup().name}-${managedResourceGroupNam
 var managedResourceGroupId = '${subscription().id}/resourceGroups/${managedResourceGroupName}'
 var appName = '${prefix}${name}-${replace(publishers[publisher].version,'.','-')}'
 
-module cassandra 'modules/documentDB/databaseAccounts.bicep' = if(nestedResources) {
+module cassandra 'modules/documentDB/databaseAccounts.bicep' = if(seperateResources) {
   name: 'cassandra-${uniqueString(location, resourceGroup().name)}'
   params: {
     location: location
@@ -102,7 +102,7 @@ module cassandra 'modules/documentDB/databaseAccounts.bicep' = if(nestedResource
   }
 }
 
-module storageAccount 'modules/storage/storageAccounts.bicep' = [for location in union([ location ], secondaryLocations): if(nestedResources) {
+module storageAccount 'modules/storage/storageAccounts.bicep' = [for location in union([ location ], secondaryLocations): if(seperateResources) {
   name: 'storageAccount-${uniqueString(location, resourceGroup().id, deployment().name)}'
   params: {
     location: location
@@ -154,13 +154,13 @@ resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
         value: assignRole
       }
       newOrExistingStorageAccount: {
-        value: nestedResources ? 'existing' : newOrExistingStorageAccount
+        value: seperateResources ? 'existing' : newOrExistingStorageAccount
       }
       storageAccountName: {
         value: storageAccountName
       }
       storageAccountResourceGroupName: {
-        value: nestedResources ? resourceGroupName : managedResourceGroupName
+        value: seperateResources ? resourceGroupName : managedResourceGroupName
       }
       newOrExistingKeyVault: {
         value: newOrExistingKeyVault
@@ -184,13 +184,13 @@ resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
         value: '${trafficManagerDnsName}-${replace(publishers[publisher].version,'.','-')}'
       }
       newOrExistingCosmosDB: {
-        value: nestedResources ? 'existing' : newOrExistingCosmosDB
+        value: seperateResources ? 'existing' : newOrExistingCosmosDB
       }
       cosmosDBName: {
         value: 'ddc${cosmosDBName}'
       }
       cosmosDBRG: {
-        value: nestedResources ? resourceGroupName : managedResourceGroupName
+        value: seperateResources ? resourceGroupName : managedResourceGroupName
       }
       servicePrincipalClientID: {
         value: servicePrincipalClientID
