@@ -7,10 +7,8 @@ PARAMETERS_FILE=$1
 LOCATION=$(jq -r '.parameters.location.value' "$PARAMETERS_FILE")
 RESOURCE_GROUP=$(jq -r '.parameters.resourceGroupName.value' "$PARAMETERS_FILE")
 
-az account set -s "Azure-Gaming-Canary"
-
 echo '##[section]Horde Storage - Deploy Bicep Template'
-az bicep install --version v0.11.1
+az bicep upgrade
 
 az group create \
     --name "$RESOURCE_GROUP"\
@@ -22,5 +20,4 @@ az deployment group create \
     --template-file main.bicep \
     --parameters "$PARAMETERS_FILE" \
     --parameters workerServicePrincipalSecret=$AAD_SECRET \
-    --subscription "Azure-Gaming-Canary" \
     || exit 1
