@@ -13,7 +13,7 @@ param name string = 'ddc-storage'
 param agentPoolCount int = 2
 param agentPoolName string = 'k8agent'
 param vmSize string = 'Standard_L8s_v3'
-param hostname string = 'deploy1.ddc-storage.gaming.azure.com'
+param hostname string = '${prefix}.ddc-storage.gaming.azure.com'
 param isZoneRedundant bool = false
 
 @description('Running this template requires roleAssignment permission on the Resource Group, which require an Owner role. Set this to false to deploy some of the resources')
