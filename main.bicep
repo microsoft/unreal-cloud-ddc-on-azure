@@ -89,7 +89,7 @@ var issuerProvider = 'OneCertV2-PublicCA'
 var managedResourceGroupId = '${subscription().id}/resourceGroups/${resourceGroup().name}-${managedResourceGroupName}-${replace(publishers[publisher].version,'.','-')}'
 var appName = '${prefix}${name}-${replace(publishers[publisher].version,'.','-')}'
 
-resource ddcStorage 'Microsoft.Solutions/applications@2021-07-01' = if (false) {
+resource ddcStorage 'Microsoft.Solutions/applications@2021-07-01' = {
   location: location
   kind: 'MarketPlace'
   name: appName
@@ -128,7 +128,7 @@ resource ddcStorage 'Microsoft.Solutions/applications@2021-07-01' = if (false) {
         value: issuerProvider
       }
       assignRole: {
-        value: assignRole
+        value: false
       }
       newOrExistingStorageAccount: {
         value: newOrExistingStorageAccount
