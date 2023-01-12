@@ -6,16 +6,7 @@
             "value": "westus"
         },
         "resourceGroupName": {
-            "value": "canary-ddc-storage"
-        },
-        "prefix": {
-            "value": "dev-canary-"
-        },
-        "servicePrincipalClientID": {
-            "value": "3c6b6b30-7267-4c66-bb6e-aa78c23d4510"
-        },
-        "hostname":{
-            "value": "preview.canary.ddc-storage.gaming.azure.com"
+            "value": "uc-ddc"
         },
         "secondaryLocations": {
             "value": [
