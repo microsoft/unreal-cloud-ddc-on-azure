@@ -80,7 +80,7 @@ param publishers object = {
     name: 'preview'
     product: 'horde-storage-preview'
     publisher: 'microsoft-azure-gaming'
-    version: '0.1.26'
+    version: '0.1.24'
   }
 }
 
