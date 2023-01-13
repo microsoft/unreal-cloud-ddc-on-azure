@@ -161,7 +161,7 @@ resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
       storageAccountName: {
         value: storageAccountName
       }
-      storageAccountResourceGroupName: {
+      storageResourceGroupName: {
         value: seperateResources ? resourceGroupName : managedResourceGroup
       }
       newOrExistingKeyVault: {
