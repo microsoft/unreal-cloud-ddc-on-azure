@@ -194,6 +194,9 @@ resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
       cosmosDBRG: {
         value: seperateResources ? resourceGroupName : managedResourceGroup
       }
+      cassandraConnectionString: {
+        value: seperateResources ? cassandra.outputs.cassandraConnectionString : ''
+      }
       servicePrincipalClientID: {
         value: servicePrincipalClientID
       }
