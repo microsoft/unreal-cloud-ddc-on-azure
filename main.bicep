@@ -28,7 +28,7 @@ param storageAccountType string = isZoneRedundant ? '${storageAccountTier}_ZRS' 
 
 @allowed([ 'new', 'existing' ])
 param newOrExistingStorageAccount string = 'new'
-param storageAccountName string = 'ddcstore${uniqueString(resourceGroup().id, subscription().subscriptionId, location, storageAccountType, seperateResources && false ? '' : publishers[publisher].version)}'
+param storageAccountName string = 'ddcstore${uniqueString(resourceGroup().id, subscription().subscriptionId, location, storageAccountType, seperateResources ? '' : publishers[publisher].version)}'
 
 @allowed([ 'new', 'existing' ])
 param newOrExistingKeyVault string = 'new'
@@ -104,7 +104,7 @@ module cassandra 'modules/documentDB/databaseAccounts.bicep' = if(seperateResour
   }
 }
 
-module storageAccount 'modules/storage/storageAccounts.bicep' = [for location in union([ location ], secondaryLocations): if(seperateResources && false) {
+module storageAccount 'modules/storage/storageAccounts.bicep' = [for location in union([ location ], secondaryLocations): if(seperateResources) {
   name: 'storageAccount-${uniqueString(location, resourceGroup().id, deployment().name)}'
   params: {
     location: location
@@ -156,13 +156,13 @@ resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
         value: assignRole
       }
       newOrExistingStorageAccount: {
-        value: seperateResources && false ? 'existing' : newOrExistingStorageAccount
+        value: seperateResources ? 'existing' : newOrExistingStorageAccount
       }
       storageAccountName: {
         value: storageAccountName
       }
       storageResourceGroupName: {
-        value: seperateResources && false ? resourceGroupName : managedResourceGroup
+        value: seperateResources ? resourceGroupName : managedResourceGroup
       }
       newOrExistingKeyVault: {
         value: newOrExistingKeyVault
