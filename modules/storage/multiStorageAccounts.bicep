@@ -23,4 +23,5 @@ module storageAccount 'storageAccounts.bicep' = [for location in union([ locatio
   }
 }]
 
-output storageConnectionStrings array = [for (location, index) in union([ location ], secondaryLocations): storageAccount[index]]
+output storageConnectionStrings array = [for (location, index) in union([ location ], secondaryLocations): storageAccount[index].outputs.blobStorageConnectionString]
+
