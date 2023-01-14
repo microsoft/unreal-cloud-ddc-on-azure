@@ -104,17 +104,16 @@ module cassandra 'modules/documentDB/databaseAccounts.bicep' = if(seperateResour
   }
 }
 
-module storageAccount 'modules/storage/storageAccounts.bicep' = [for location in union([ location ], secondaryLocations): if(seperateResources) {
-  name: 'storageAccount-${uniqueString(location, resourceGroup().id, deployment().name)}'
+module storageAccount 'modules/storage/multiStorageAccounts.bicep' = {
+  name: 'storageAccounts-${uniqueString(location, resourceGroup().id, deployment().name)}'
   params: {
     location: location
-    name: take('${take(location, 8)}${storageAccountName}',24)
+    secondaryLocations: secondaryLocations
+    storageAccountName: take('${take(location, 8)}${storageAccountName}',24)
     storageAccountTier: storageAccountTier
     storageAccountType: storageAccountType
   }
-}]
-
-var storageConnectionStrings = [for (location, index) in union([ location ], secondaryLocations): seperateResources ? 'DefaultEndpointsProtocol=https;AccountName=${storageAccount[index].name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(resourceId(subscription().id, resoureceGroup().name, 'Microsoft.Storage/storageAccounts@2019-06-01', storageAccount[index].name)).keys[0].value}' : null]
+}
 
 resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
   location: location
@@ -167,7 +166,7 @@ resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
         value: seperateResources ? resourceGroupName : managedResourceGroup
       }
       storageConnectionStrings: {
-        value: storageConnectionStrings
+        value: storageAccount.outputs.storageConnectionStrings
       }
       newOrExistingKeyVault: {
         value: newOrExistingKeyVault
