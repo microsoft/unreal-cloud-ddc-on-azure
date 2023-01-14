@@ -114,6 +114,8 @@ module storageAccount 'modules/storage/storageAccounts.bicep' = [for location in
   }
 }]
 
+var storageConnectionStrings = [for (location, index) in union([ location ], secondaryLocations): seperateResources ? storageAccount[index].outputs.blobStorageConnectionString : null ]
+
 resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
   location: location
   kind: 'MarketPlace'
@@ -165,7 +167,7 @@ resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
         value: seperateResources ? resourceGroupName : managedResourceGroup
       }
       storageConnectionStrings: {
-        value: seperateResources ? [for (location, index) in union([ location ], secondaryLocations): storageAccount[index].outputs.blobStorageConnectionString] : ''
+        value: storageConnectionStrings
       }
       newOrExistingKeyVault: {
         value: newOrExistingKeyVault
