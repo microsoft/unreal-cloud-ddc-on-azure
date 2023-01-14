@@ -94,7 +94,7 @@ var managedResourceGroup = '${resourceGroup().name}-${managedResourceGroupName}-
 var managedResourceGroupId = '${subscription().id}/resourceGroups/${managedResourceGroup}'
 var appName = '${prefix}${name}-${replace(publishers[publisher].version,'.','-')}'
 
-module cassandra 'modules/documentDB/databaseAccounts.bicep' = if(seperateResources && false) {
+module cassandra 'modules/documentDB/databaseAccounts.bicep' = if(seperateResources) {
   name: 'cassandra-${uniqueString(location, resourceGroup().name)}'
   params: {
     location: location
@@ -186,13 +186,13 @@ resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
         value: '${trafficManagerDnsPrefix}-${replace(publishers[publisher].version,'.','-')}'
       }
       newOrExistingCosmosDB: {
-        value: seperateResources && false ? 'existing' : newOrExistingCosmosDB
+        value: seperateResources ? 'existing' : newOrExistingCosmosDB
       }
       cosmosDBName: {
         value: 'ddc${cosmosDBName}'
       }
       cosmosDBRG: {
-        value: seperateResources && false ? resourceGroupName : managedResourceGroup
+        value: seperateResources ? resourceGroupName : managedResourceGroup
       }
       servicePrincipalClientID: {
         value: servicePrincipalClientID
