@@ -115,7 +115,7 @@ module storageAccount 'modules/storage/storageAccounts.bicep' = [for location in
 }]
 
 var storageConnectionStrings = [for (location, index) in union([ location ], secondaryLocations):
-  seperateResources ? 'DefaultEndpointsProtocol=https;AccountName=${name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount[index].id).keys[0].value}' : null
+  seperateResources ? 'DefaultEndpointsProtocol=https;AccountName=${storageAccount[index].name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount[index].id).keys[0].value}' : null
 ]
 
 resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
