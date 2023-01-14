@@ -28,7 +28,7 @@ param storageAccountType string = isZoneRedundant ? '${storageAccountTier}_ZRS' 
 
 @allowed([ 'new', 'existing' ])
 param newOrExistingStorageAccount string = 'new'
-param storageAccountName string = 'ddcstore${uniqueString(resourceGroup().id, subscription().subscriptionId, location, storageAccountType, newOrExistingStorageAccount == 'new' ? publishers[publisher].version : '')}'
+param storageAccountName string = 'ddcstore${uniqueString(resourceGroup().id, subscription().subscriptionId, location, storageAccountType, seperateResources && false ? '' : publishers[publisher].version)}'
 
 @allowed([ 'new', 'existing' ])
 param newOrExistingKeyVault string = 'new'
@@ -67,6 +67,8 @@ param epicEULA bool = false
 
 param managedResourceGroupName string = 'mrg'
 
+param seperateResources bool = true
+
 param trafficManagerDnsName string = '${prefix}preview.unreal-cloud-ddc'
 
 @allowed([ 'dev', 'prod' ])
@@ -88,8 +90,29 @@ param publishers object = {
 
 var certificateIssuer = 'Subscription-Issuer'
 var issuerProvider = 'OneCertV2-PublicCA'
-var managedResourceGroupId = '${subscription().id}/resourceGroups/${resourceGroup().name}-${managedResourceGroupName}-${replace(publishers[publisher].version,'.','-')}'
+var managedResourceGroup = '${resourceGroup().name}-${managedResourceGroupName}-${replace(publishers[publisher].version,'.','-')}'
+var managedResourceGroupId = '${subscription().id}/resourceGroups/${managedResourceGroup}'
 var appName = '${prefix}${name}-${replace(publishers[publisher].version,'.','-')}'
+
+module cassandra 'modules/documentDB/databaseAccounts.bicep' = if(seperateResources) {
+  name: 'cassandra-${uniqueString(location, resourceGroup().name)}'
+  params: {
+    location: location
+    secondaryLocations: secondaryLocations
+    newOrExisting: newOrExistingCosmosDB
+    name: 'ddc${cosmosDBName}'
+  }
+}
+
+module storageAccount 'modules/storage/storageAccounts.bicep' = [for location in union([ location ], secondaryLocations): if(seperateResources && false) {
+  name: 'storageAccount-${uniqueString(location, resourceGroup().id, deployment().name)}'
+  params: {
+    location: location
+    name: take('${take(location, 8)}${storageAccountName}',24)
+    storageAccountTier: storageAccountTier
+    storageAccountType: storageAccountType
+  }
+}]
 
 resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
   location: location
@@ -133,10 +156,13 @@ resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
         value: assignRole
       }
       newOrExistingStorageAccount: {
-        value: newOrExistingStorageAccount
+        value: seperateResources && false ? 'existing' : newOrExistingStorageAccount
       }
       storageAccountName: {
         value: storageAccountName
+      }
+      storageResourceGroupName: {
+        value: seperateResources && false ? resourceGroupName : managedResourceGroup
       }
       newOrExistingKeyVault: {
         value: newOrExistingKeyVault
@@ -160,7 +186,16 @@ resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
         value: '${trafficManagerDnsPrefix}-${replace(publishers[publisher].version,'.','-')}'
       }
       newOrExistingCosmosDB: {
-        value: newOrExistingCosmosDB
+        value: seperateResources ? 'existing' : newOrExistingCosmosDB
+      }
+      cosmosDBName: {
+        value: 'ddc${cosmosDBName}'
+      }
+      cosmosDBRG: {
+        value: seperateResources ? resourceGroupName : managedResourceGroup
+      }
+      cassandraConnectionString: {
+        value: seperateResources ? cassandra.outputs.cassandraConnectionString : ''
       }
       servicePrincipalClientID: {
         value: servicePrincipalClientID
