@@ -67,7 +67,7 @@ param epicEULA bool = false
 
 param managedResourceGroupName string = 'mrg'
 
-param seperateResources bool = false
+param seperateResources bool = true
 
 param trafficManagerDnsName string = '${prefix}preview.unreal-cloud-ddc'
 
@@ -94,7 +94,7 @@ var managedResourceGroup = '${resourceGroup().name}-${managedResourceGroupName}-
 var managedResourceGroupId = '${subscription().id}/resourceGroups/${managedResourceGroup}'
 var appName = '${prefix}${name}-${replace(publishers[publisher].version,'.','-')}'
 
-module cassandra 'modules/documentDB/databaseAccounts.bicep' = if(seperateResources) {
+module cassandra 'modules/documentDB/databaseAccounts.bicep' = if(seperateResources && false) {
   name: 'cassandra-${uniqueString(location, resourceGroup().name)}'
   params: {
     location: location
@@ -104,7 +104,7 @@ module cassandra 'modules/documentDB/databaseAccounts.bicep' = if(seperateResour
   }
 }
 
-module storageAccount 'modules/storage/storageAccounts.bicep' = [for location in union([ location ], secondaryLocations): if(seperateResources) {
+module storageAccount 'modules/storage/storageAccounts.bicep' = [for location in union([ location ], secondaryLocations): if(seperateResources && false) {
   name: 'storageAccount-${uniqueString(location, resourceGroup().id, deployment().name)}'
   params: {
     location: location
