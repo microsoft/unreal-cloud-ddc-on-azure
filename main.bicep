@@ -105,7 +105,7 @@ module cassandra 'modules/documentDB/databaseAccounts.bicep' = if(seperateResour
 }
 
 module storageAccount 'modules/storage/storageAccounts.bicep' = [for location in union([ location ], secondaryLocations): if(seperateResources) {
-  name: 'storageAccount-${uniqueString(location, resourceGroup().id, deployment().name, seperateResources)}'
+  name: 'storageAccount-${uniqueString(location, resourceGroup().id, deployment().name, string(seperateResources))}'
   params: {
     location: location
     name: take('${take(location, 8)}${storageAccountName}',24)
