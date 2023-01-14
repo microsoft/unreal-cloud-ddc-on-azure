@@ -28,7 +28,7 @@ param storageAccountType string = isZoneRedundant ? '${storageAccountTier}_ZRS' 
 
 @allowed([ 'new', 'existing' ])
 param newOrExistingStorageAccount string = 'new'
-param storageAccountName string = 'ddcstore${uniqueString(resourceGroup().id, subscription().subscriptionId, location, storageAccountType, seperateResources ? '' : publishers[publisher].version)}'
+param storageAccountName string = 'ddcstore${uniqueString(resourceGroup().id, subscription().subscriptionId, location, storageAccountType, seperateResources && false ? '' : publishers[publisher].version)}'
 
 @allowed([ 'new', 'existing' ])
 param newOrExistingKeyVault string = 'new'
