@@ -164,6 +164,9 @@ resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
       storageResourceGroupName: {
         value: seperateResources ? resourceGroupName : managedResourceGroup
       }
+      storageConnectionStrings: {
+        value: seperateResources ? [for (location, index) in union([ location ], secondaryLocations): storageAccount[index].outputs.blobStorageConnectionString] : ''
+      }
       newOrExistingKeyVault: {
         value: newOrExistingKeyVault
       }
