@@ -162,7 +162,7 @@ resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
         value: storageAccountName
       }
       storageResourceGroupName: {
-        value: seperateResources ? resourceGroupName : managedResourceGroup
+        value: seperateResources && false ? resourceGroupName : managedResourceGroup
       }
       newOrExistingKeyVault: {
         value: newOrExistingKeyVault
@@ -186,13 +186,13 @@ resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
         value: '${trafficManagerDnsPrefix}-${replace(publishers[publisher].version,'.','-')}'
       }
       newOrExistingCosmosDB: {
-        value: seperateResources ? 'existing' : newOrExistingCosmosDB
+        value: seperateResources && false ? 'existing' : newOrExistingCosmosDB
       }
       cosmosDBName: {
         value: 'ddc${cosmosDBName}'
       }
       cosmosDBRG: {
-        value: seperateResources ? resourceGroupName : managedResourceGroup
+        value: seperateResources && false ? resourceGroupName : managedResourceGroup
       }
       servicePrincipalClientID: {
         value: servicePrincipalClientID
