@@ -67,7 +67,7 @@ param epicEULA bool = false
 
 param managedResourceGroupName string = 'mrg'
 
-param seperateResources bool = true
+param seperateResources bool = false
 
 param trafficManagerDnsName string = '${prefix}preview.unreal-cloud-ddc'
 
