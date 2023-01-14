@@ -156,7 +156,7 @@ resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
         value: assignRole
       }
       newOrExistingStorageAccount: {
-        value: seperateResources ? 'existing' : newOrExistingStorageAccount
+        value: seperateResources && false ? 'existing' : newOrExistingStorageAccount
       }
       storageAccountName: {
         value: storageAccountName
