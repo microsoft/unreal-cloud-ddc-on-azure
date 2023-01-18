@@ -40,9 +40,9 @@ jobs:
 
     - name: Run Deployment Script with Canary Parameters
       env:
-        SERVICE_SP: ${ secrets.SERVICE_SP }
-        WORKER_SP: ${ secrets.WORKER_SP }
-        AAD_SECRET: ${ secrets.AAD_SECRET }
+        SERVICE_SP: ${{ secrets.SERVICE_SP }}
+        WORKER_SP: ${{ secrets.WORKER_SP }}
+        AAD_SECRET: ${{ secrets.AAD_SECRET }}
       run: |
         ${PWD}/scripts/deploy.sh main.parameters.json
         ${PWD}/scripts/setupPublicIP.sh main.parameters.json
