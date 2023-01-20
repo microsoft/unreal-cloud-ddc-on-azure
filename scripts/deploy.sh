@@ -21,5 +21,7 @@ az deployment group create \
     --resource-group "$RESOURCE_GROUP" \
     --template-file main.bicep \
     --parameters "$PARAMETERS_FILE" \
+    --parameters servicePrincipalClientID=$SERVICE_SP \
+    --parameters workerServicePrincipalClientID=$WORKER_SP \
     --parameters workerServicePrincipalSecret=$AAD_SECRET \
     || exit 1
