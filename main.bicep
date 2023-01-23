@@ -28,7 +28,7 @@ param storageAccountType string = isZoneRedundant ? '${storageAccountTier}_ZRS' 
 
 @allowed([ 'new', 'existing' ])
 param newOrExistingStorageAccount string = 'new'
-param storageAccountName string = 'ddcstore${uniqueString(resourceGroup().id, subscription().subscriptionId, location, storageAccountType, seperateResources && false ? '' : publishers[publisher].version)}'
+param storageAccountName string = 'ddcstore${uniqueString(resourceGroup().id, subscription().subscriptionId, location, storageAccountType, seperateResources ? '' : publishers[publisher].version)}'
 
 @allowed([ 'new', 'existing' ])
 param newOrExistingKeyVault string = 'new'
@@ -84,7 +84,7 @@ param publishers object = {
     name: 'preview'
     product: 'unreal-cloud-ddc-preview'
     publisher: 'microsoft-azure-gaming'
-    version: '0.1.42'
+    version: '0.1.43'
   }
 }
 
@@ -104,15 +104,16 @@ module cassandra 'modules/documentDB/databaseAccounts.bicep' = if(seperateResour
   }
 }
 
-module storageAccount 'modules/storage/storageAccounts.bicep' = [for location in union([ location ], secondaryLocations): if(seperateResources && false) {
-  name: 'storageAccount-${uniqueString(location, resourceGroup().id, deployment().name)}'
+module storageAccount 'modules/storage/multiStorageAccounts.bicep' = {
+  name: 'storageAccounts-${uniqueString(location, resourceGroup().id, deployment().name)}'
   params: {
     location: location
-    name: take('${take(location, 8)}${storageAccountName}',24)
+    secondaryLocations: secondaryLocations
+    storageAccountName: storageAccountName
     storageAccountTier: storageAccountTier
     storageAccountType: storageAccountType
   }
-}]
+}
 
 resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
   location: location
@@ -156,13 +157,16 @@ resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
         value: assignRole
       }
       newOrExistingStorageAccount: {
-        value: seperateResources && false ? 'existing' : newOrExistingStorageAccount
+        value: seperateResources ? 'existing' : newOrExistingStorageAccount
       }
       storageAccountName: {
         value: storageAccountName
       }
       storageResourceGroupName: {
-        value: seperateResources && false ? resourceGroupName : managedResourceGroup
+        value: seperateResources ? resourceGroupName : managedResourceGroup
+      }
+      storageConnectionStrings: {
+        value: storageAccount.outputs.storageConnectionStrings
       }
       newOrExistingKeyVault: {
         value: newOrExistingKeyVault
