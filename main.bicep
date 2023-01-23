@@ -104,16 +104,30 @@ module cassandra 'modules/documentDB/databaseAccounts.bicep' = if(seperateResour
   }
 }
 
-module storageAccount 'modules/storage/multiStorageAccounts.bicep' = {
-  name: 'storageAccounts-${uniqueString(location, resourceGroup().id, deployment().name)}'
-  params: {
-    location: location
-    secondaryLocations: secondaryLocations
-    storageAccountName: storageAccountName
-    storageAccountTier: storageAccountTier
-    storageAccountType: storageAccountType
+resource storageAccount 'Microsoft.Storage/storageAccounts@2019-06-01' = [for location in union([ location ], secondaryLocations): {
+  name: take('${take(location, 8)}${storageAccountName}',24)
+  location: location
+  sku: {
+    name: storageAccountType
   }
-}
+  kind: 'StorageV2'
+  properties: {
+    encryption: {
+      keySource: 'Microsoft.Storage'
+      services: {
+        blob: {
+          enabled: true
+        }
+        file: {
+          enabled: true
+        }
+      }
+    }
+    supportsHttpsTrafficOnly: true
+    allowBlobPublicAccess: false
+    minimumTlsVersion: 'TLS1_2'
+  }
+}]
 
 resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
   location: location
@@ -166,7 +180,7 @@ resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
         value: seperateResources ? resourceGroupName : managedResourceGroup
       }
       storageConnectionStrings: {
-        value: storageAccount.outputs.storageConnectionStrings
+        value: [for (location, index) in union([ location ], secondaryLocations): 'DefaultEndpointsProtocol=https;AccountName=${take('${take(location, 8)}${storageAccountName}',24)};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount[index].id, storageAccount[index].apiVersion).keys[0].value}']
       }
       newOrExistingKeyVault: {
         value: newOrExistingKeyVault
