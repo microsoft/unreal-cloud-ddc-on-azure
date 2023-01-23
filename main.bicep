@@ -109,7 +109,7 @@ module storageAccount 'modules/storage/multiStorageAccounts.bicep' = {
   params: {
     location: location
     secondaryLocations: secondaryLocations
-    storageAccountName: take('${take(location, 8)}${storageAccountName}',24)
+    storageAccountName: storageAccountName
     storageAccountTier: storageAccountTier
     storageAccountType: storageAccountType
   }
