@@ -17,7 +17,7 @@ module storageAccount 'storageAccounts.bicep' = [for location in union([ locatio
   name: 'storageAccount-${uniqueString(location, resourceGroup().id, deployment().name)}'
   params: {
     location: location
-    name: take('${take(location, 8)}${storageAccountName}',24)
+    name: storageAccountName
     storageAccountTier: storageAccountTier
     storageAccountType: storageAccountType
   }
