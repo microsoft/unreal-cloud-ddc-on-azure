@@ -4,6 +4,8 @@
 # PARAMETERS_FILE: Parmaeters file used for deployment
 PARAMETERS_FILE=$1
 
+# SUBSCRIPTION_ID=$(az account list --query "[].{id:id}" --output tsv)
+
 RG=$(jq -r '.parameters.resourceGroupName.value' "$PARAMETERS_FILE")
 
 managedResourceGroupIds=$(az managedapp list --resource-group $RG --query [].managedResourceGroupId --output tsv)
