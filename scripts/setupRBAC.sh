@@ -10,20 +10,24 @@ managedResourceGroupIds=$(az managedapp list --resource-group $RG --query [].man
 
 for managedResourceGroupId in $managedResourceGroupIds; do
     resourceGroup=$(echo ${managedResourceGroupId##*/})
-    nodeResourceGroups=$(az aks list --resource-group $resourceGroup --query [].[nodeResourceGroup] --output tsv)
 
-    for nodeResourceGroup in $nodeResourceGroups; do
-        ipName=$(az network public-ip list --resource-group $nodeResourceGroup --query "[?contains(name,'kub')].[name]" --output tsv)
-        ipID=$(az network public-ip list --resource-group $nodeResourceGroup --query "[?contains(name,'kub')].[id]" --output tsv)
-        location=$(az network public-ip list --resource-group $nodeResourceGroup --query "[?contains(name,'kub')].[location]" --output tsv)
+    aksClusters=$(az aks list --resource-group $resourceGroup --query [].[name] --output tsv)
+    locations=$(az aks list --resource-group $resourceGroup --query [].[location] --output tsv)
+    keyVaults=$(az keyvault list --resource-group $resourceGroup --query [].[name] --output tsv)
 
-        echo ipName: $ipName
-        echo ipID: $ipID
-        echo location: $location
+    for location in $locations; do
+        # Key Vault
+        assignee=$(az ad user show --id "id-ddc-storage-$location" --query "id" --output tsv)
+        
+        az role assignment create --assignee "$assignee" \
+            --role "{roleNameOrId}" \
+            --scope "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/{providerName}/{resourceType}/{resourceSubType}/{resourceName}"
 
-        az network public-ip update \
-            --name $ipName \
-            --dns-name $ipName \
-            --resource-group $nodeResourceGroup
+        # AKS
+        # az ad sp list --all --filter "servicePrincipalType eq 'ManagedIdentity'"
+        assignee=$(az ad user show --id "id-AksRunCommandProxy" --query "id" --output tsv)
+        az role assignment create --assignee "$assignee" \
+            --role "{roleNameOrId}" \
+            --scope "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/{providerName}/{resourceType}/{resourceSubType}/{resourceName}"
     done
 done
