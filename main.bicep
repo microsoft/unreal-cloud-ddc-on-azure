@@ -84,7 +84,7 @@ param publishers object = {
     name: 'preview'
     product: 'unreal-cloud-ddc-preview'
     publisher: 'microsoft-azure-gaming'
-    version: '0.1.43'
+    version: '0.1.44'
   }
 }
 
