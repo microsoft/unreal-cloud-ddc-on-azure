@@ -135,7 +135,7 @@ resource userAssignedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@
 }
 
 module rbacAssignments 'modules/roleAssignment.bicep' = {
-  name: rbacAssignments
+  name: 'rbacAssignments'
   scope: subscription().id
   params: {
     principalId: userAssignedIdentity.properties.principalId
