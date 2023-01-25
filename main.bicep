@@ -136,6 +136,7 @@ resource userAssignedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@
 
 module rbacAssignments 'modules/roleAssignment.bicep' = {
   name: rbacAssignments
+  scope: subscription().id
   params: {
     principalId: userAssignedIdentity.properties.principalId
   }
@@ -144,7 +145,7 @@ module rbacAssignments 'modules/roleAssignment.bicep' = {
 resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
   location: location
   dependsOn: [
-    rbac
+    rbacAssignments
   ]
   identity: {
     type: 'UserAssigned'
