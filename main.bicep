@@ -129,8 +129,37 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2019-06-01' = [for lo
   }
 }]
 
+resource userAssignedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
+  name: '${prefix}id'
+  location: location
+}
+
+// https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#all
+var rbacRolesNeeded = [
+  'b24988ac-6180-42a0-ab88-20f7382dd24c' // Contributor
+  '18d7d88d-d35e-4fb5-a5c3-7773c20a72d9' // User Access Administrator
+]
+
+resource rbac 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for roleDefId in rbacRolesNeeded: {
+  name: guid(resourceGroup().name, roleDefId, userAssignedIdentity.id)
+  properties: {
+    roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions', roleDefId)
+    principalId: userAssignedIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
+  }
+}]
+
 resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
   location: location
+  dependsOn: [
+    rbac
+  ]
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${userAssignedIdentity.id}': {}
+    }
+  }
   kind: 'MarketPlace'
   name: appName
   plan: publishers[publisher]
