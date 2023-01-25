@@ -15,7 +15,7 @@ resource rbac 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for roleDe
   name: guid(resourceGroup().name, roleDefId, userAssignedIdentity.id)
   properties: {
     roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions', roleDefId)
-    principalId: userAssignedIdentity.properties.principalId
+    principalId: principalId
     principalType: 'ServicePrincipal'
   }
 }]
