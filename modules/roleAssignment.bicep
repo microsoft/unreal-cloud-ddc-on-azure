@@ -13,7 +13,6 @@ var rbacRolesNeeded = [
 
 resource rbac 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for roleDefId in rbacRolesNeeded: {
   name: guid(resourceGroup().name, roleDefId, userAssignedIdentity.id)
-  scope: '/subscriptions/${subscription().id}
   properties: {
     roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions', roleDefId)
     principalId: userAssignedIdentity.properties.principalId
