@@ -1,3 +1,5 @@
+targetScope = 'subscription'
+
 param prefix string = uniqueString(location, resourceGroup().id, deployment().name)
 
 @description('The principal to assign the role to')
