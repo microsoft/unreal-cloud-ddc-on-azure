@@ -1,7 +1,5 @@
 targetScope = 'subscription'
 
-param prefix string = uniqueString(location, resourceGroup().id, deployment().name)
-
 @description('The principal to assign the role to')
 param principalId string
 
@@ -12,7 +10,7 @@ var rbacRolesNeeded = [
 ]
 
 resource rbac 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for roleDefId in rbacRolesNeeded: {
-  name: guid(resourceGroup().name, roleDefId, userAssignedIdentity.id)
+  name: guid(roleDefId, principalId)
   properties: {
     roleDefinitionId: roleDefId
     principalId: principalId
