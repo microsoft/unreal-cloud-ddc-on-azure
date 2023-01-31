@@ -15,6 +15,9 @@
         },
         "epicEULA": {
             "value": true
+        },
+        "isCrossTenant": {
+            "value": false
         }
     }
 }
