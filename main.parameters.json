@@ -16,7 +16,7 @@
         "epicEULA": {
             "value": true
         },
-        "isApp": {
+        "isCrossTenant": {
             "value": false
         }
     }
