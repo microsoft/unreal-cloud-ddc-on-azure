@@ -87,6 +87,7 @@ param publishers object = {
     version: '0.1.50'
   }
 }
+param isCrossTenant bool = true
 
 var certificateIssuer = 'Subscription-Issuer'
 var issuerProvider = 'OneCertV2-PublicCA'
@@ -264,6 +265,9 @@ resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
       }
       enableCert: {
         value: enableCert
+      }
+      isApp: {
+        value: isCrossTenant
       }
     }
     jitAccessPolicy: null
