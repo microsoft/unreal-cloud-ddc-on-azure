@@ -1,0 +1,40 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License.
+name: Deployment Single environment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment Target'
+        type: environment
+        required: true 
+      cred_secret:
+        description: 'Secret for Azure Credentials'
+        type: string
+        required: false
+        default: AZURE_CREDENTIALS
+      aad_secret:
+        description: 'Secret for Azure Credentials'
+        type: string
+        required: false
+        default: AAD_SECRET
+
+jobs:
+  DeployTemplate:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.[github.event.inputs.cred_secret] }}
+
+    - name: Run Changed Deployment Script
+      run: |
+        az account show
+        ${PWD}/scripts/deploy.sh "configs/${{ inputs.environment }}/parameters.json" "${{ secrets.[github.event.inputs.aad_secret] }}"
+        ${PWD}/scripts/setupPublicIP.sh "configs/${{ inputs.environment }}/parameters.json"
