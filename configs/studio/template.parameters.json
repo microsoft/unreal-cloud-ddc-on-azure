@@ -11,6 +11,9 @@
         "servicePrincipalClientID": {
             "value": ""
         },
+        "workerServicePrincipalClientID": {
+            "value": ""
+        },
         "hostname":{
             "value": "horde-storage.studio.net"
         },
