@@ -7,7 +7,7 @@
         },
         "resourceGroupName": {
             "value": "studio-unreal-cloud-ddc",
-        },,
+        },
         "servicePrincipalClientID": {
             "value": ""
         },
