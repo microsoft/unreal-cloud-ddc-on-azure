@@ -89,6 +89,8 @@ param publishers object = {
 }
 param isCrossTenant bool = true
 
+param azureTenantID string = subscription().tenantId
+
 var certificateIssuer = 'Subscription-Issuer'
 var issuerProvider = 'OneCertV2-PublicCA'
 var managedResourceGroup = '${resourceGroup().name}-${managedResourceGroupName}-${replace(publishers[publisher].version,'.','-')}'
@@ -268,6 +270,9 @@ resource ddcStorage 'Microsoft.Solutions/applications@2017-09-01' = {
       }
       isApp: {
         value: isCrossTenant
+      }
+      azureTenantID: {
+        value: azureTenantID
       }
     }
     jitAccessPolicy: null
