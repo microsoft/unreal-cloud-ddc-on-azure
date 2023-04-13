@@ -45,4 +45,4 @@ jobs:
         AAD_SECRET: ${{ secrets.AAD_SECRET }}
       run: |
         ${PWD}/scripts/deploy.sh main.parameters.json
-        ${PWD}/scripts/setupPublicIP.sh main.parameters.json
+        # ${PWD}/scripts/setupPublicIP.sh main.parameters.json
