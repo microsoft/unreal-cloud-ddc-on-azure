@@ -84,7 +84,7 @@ param publishers object = {
     name: 'preview'
     product: 'unreal-cloud-ddc-preview'
     publisher: 'microsoft-azure-gaming'
-    version: '0.2.5'
+    version: '0.2.6'
   }
 }
 param isCrossTenant bool = true
